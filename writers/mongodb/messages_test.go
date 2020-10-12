@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mainflux/mainflux/pkg/transformers/senml"
+	"github.com/mainflux/mainflux/pkg/transformers"
 	"github.com/mainflux/mainflux/writers/mongodb"
 
 	log "github.com/mainflux/mainflux/logger"
@@ -50,7 +50,7 @@ func TestSave(t *testing.T) {
 	repo := mongodb.New(db)
 
 	now := time.Now().Unix()
-	msg := senml.Message{
+	msg := transformers.Message{
 		Channel:    "45",
 		Publisher:  "2580",
 		Protocol:   "http",
@@ -59,7 +59,7 @@ func TestSave(t *testing.T) {
 		Time:       13451312,
 		UpdateTime: 5456565466,
 	}
-	var msgs []senml.Message
+	var msgs []transformers.Message
 
 	for i := 0; i < msgsNum; i++ {
 		// Mix possible values as well as value sum.

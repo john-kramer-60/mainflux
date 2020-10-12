@@ -8,7 +8,7 @@ import (
 
 	"github.com/jmoiron/sqlx" // required for DB access
 	"github.com/mainflux/mainflux/pkg/errors"
-	"github.com/mainflux/mainflux/pkg/transformers/senml"
+	"github.com/mainflux/mainflux/pkg/transformers"
 	"github.com/mainflux/mainflux/readers"
 )
 
@@ -53,7 +53,7 @@ func (tr postgresRepository) ReadAll(chanID string, offset, limit uint64, query 
 	page := readers.MessagesPage{
 		Offset:   offset,
 		Limit:    limit,
-		Messages: []senml.Message{},
+		Messages: []transformers.Message{},
 	}
 	for rows.Next() {
 		dbm := dbMessage{Channel: chanID}
@@ -112,8 +112,8 @@ type dbMessage struct {
 	UpdateTime  float64  `db:"update_time"`
 }
 
-func toMessage(dbm dbMessage) senml.Message {
-	msg := senml.Message{
+func toMessage(dbm dbMessage) transformers.Message {
+	msg := transformers.Message{
 		Channel:    dbm.Channel,
 		Subtopic:   dbm.Subtopic,
 		Publisher:  dbm.Publisher,

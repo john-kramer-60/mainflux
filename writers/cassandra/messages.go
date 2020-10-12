@@ -6,7 +6,7 @@ package cassandra
 import (
 	"github.com/gocql/gocql"
 	"github.com/mainflux/mainflux/pkg/errors"
-	"github.com/mainflux/mainflux/pkg/transformers/senml"
+	"github.com/mainflux/mainflux/pkg/transformers"
 	"github.com/mainflux/mainflux/writers"
 )
 
@@ -23,7 +23,7 @@ func New(session *gocql.Session) writers.MessageRepository {
 	return &cassandraRepository{session}
 }
 
-func (cr *cassandraRepository) Save(messages ...senml.Message) error {
+func (cr *cassandraRepository) Save(messages ...transformers.Message) error {
 	cql := `INSERT INTO messages (id, channel, subtopic, publisher, protocol,
 			name, unit, value, string_value, bool_value, data_value, sum,
 			time, update_time)

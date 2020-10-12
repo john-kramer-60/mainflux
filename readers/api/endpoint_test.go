@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/mainflux/mainflux"
-	"github.com/mainflux/mainflux/pkg/transformers/senml"
+	"github.com/mainflux/mainflux/pkg/transformers"
 	"github.com/mainflux/mainflux/readers"
 	"github.com/mainflux/mainflux/readers/api"
 	"github.com/mainflux/mainflux/readers/mocks"
@@ -35,9 +35,9 @@ var (
 )
 
 func newService() readers.MessageRepository {
-	messages := []senml.Message{}
+	messages := []transformers.Message{}
 	for i := 0; i < numOfMessages; i++ {
-		msg := senml.Message{
+		msg := transformers.Message{
 			Channel:   chanID,
 			Publisher: "1",
 			Protocol:  "mqtt",
@@ -61,7 +61,7 @@ func newService() readers.MessageRepository {
 		messages = append(messages, msg)
 	}
 
-	return mocks.NewMessageRepository(map[string][]senml.Message{
+	return mocks.NewMessageRepository(map[string][]transformers.Message{
 		chanID: messages,
 	})
 }

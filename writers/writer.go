@@ -13,6 +13,7 @@ import (
 	"github.com/mainflux/mainflux/pkg/messaging"
 	pubsub "github.com/mainflux/mainflux/pkg/messaging/nats"
 	"github.com/mainflux/mainflux/pkg/transformers"
+	"github.com/mainflux/mainflux/pkg/transformers/json"
 	"github.com/mainflux/mainflux/pkg/transformers/senml"
 )
 
@@ -31,16 +32,25 @@ type consumer struct {
 // Start method starts consuming messages received from NATS.
 // This method transforms messages to SenML format before
 // using MessageRepository to store them.
-func Start(sub messaging.Subscriber, repo MessageRepository, transformer transformers.Transformer, queue string, subjectsCfgPath string, logger logger.Logger) error {
+func Start(sub messaging.Subscriber, repo MessageRepository, contentType string, queue string, cfgPath string, logger logger.Logger) error {
 	c := consumer{
-		repo:        repo,
-		transformer: transformer,
-		logger:      logger,
+		repo:   repo,
+		logger: logger,
 	}
 
-	subjects, err := loadSubjectsConfig(subjectsCfgPath)
+	subjects, keys, err := loadConfig(cfgPath)
 	if err != nil {
 		logger.Warn(fmt.Sprintf("Failed to load subjects: %s", err))
+	}
+
+	switch contentType {
+	case json.ContentType:
+		c.transformer = json.New(keys)
+	case senml.ContentTypeJSON,
+		senml.ContentTypeCBOR:
+		c.transformer = senml.New(contentType)
+	default:
+		c.transformer = senml.New(senml.ContentTypeJSON)
 	}
 
 	for _, subject := range subjects {
@@ -56,7 +66,7 @@ func (c *consumer) handler(msg messaging.Message) error {
 	if err != nil {
 		return err
 	}
-	msgs, ok := t.([]senml.Message)
+	msgs, ok := t.([]transformers.Message)
 	if !ok {
 		return errMessageConversion
 	}
@@ -65,23 +75,24 @@ func (c *consumer) handler(msg messaging.Message) error {
 }
 
 type filterConfig struct {
-	List []string `toml:"filter"`
+	Filter []string `toml:"filter"`
 }
 
-type subjectsConfig struct {
+type writerConfig struct {
 	Subjects filterConfig `toml:"subjects"`
+	Keys     filterConfig `toml:"keys"`
 }
 
-func loadSubjectsConfig(subjectsConfigPath string) ([]string, error) {
+func loadConfig(subjectsConfigPath string) ([]string, []string, error) {
 	data, err := ioutil.ReadFile(subjectsConfigPath)
 	if err != nil {
-		return []string{pubsub.SubjectAllChannels}, errors.Wrap(errOpenConfFile, err)
+		return []string{pubsub.SubjectAllChannels}, []string{"*"}, errors.Wrap(errOpenConfFile, err)
 	}
 
-	var subjectsCfg subjectsConfig
-	if err := toml.Unmarshal(data, &subjectsCfg); err != nil {
-		return []string{pubsub.SubjectAllChannels}, errors.Wrap(errParseConfFile, err)
+	var cfg writerConfig
+	if err := toml.Unmarshal(data, &cfg); err != nil {
+		return []string{pubsub.SubjectAllChannels}, []string{"*"}, errors.Wrap(errParseConfFile, err)
 	}
 
-	return subjectsCfg.Subjects.List, nil
+	return cfg.Subjects.Filter, cfg.Keys.Filter, nil
 }

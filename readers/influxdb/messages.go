@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"github.com/mainflux/mainflux/pkg/errors"
+	"github.com/mainflux/mainflux/pkg/transformers"
 	"github.com/mainflux/mainflux/readers"
 
 	influxdata "github.com/influxdata/influxdb/client/v2"
-	"github.com/mainflux/mainflux/pkg/transformers/senml"
 )
 
 const countCol = "count"
@@ -42,7 +42,7 @@ func (repo *influxRepository) ReadAll(chanID string, offset, limit uint64, query
 		Database: repo.database,
 	}
 
-	ret := []senml.Message{}
+	ret := []transformers.Message{}
 
 	resp, err := repo.client.Query(q)
 	if err != nil {
@@ -139,7 +139,7 @@ func fmtCondition(chanID string, query map[string]string) string {
 // ParseMessage and parseValues are util methods. Since InfluxDB client returns
 // results in form of rows and columns, this obscure message conversion is needed
 // to return actual []broker.Message from the query result.
-func parseValues(value interface{}, name string, msg *senml.Message) {
+func parseValues(value interface{}, name string, msg *transformers.Message) {
 	if name == "sum" && value != nil {
 		if valSum, ok := value.(json.Number); ok {
 			sum, err := valSum.Float64()
@@ -178,8 +178,8 @@ func parseValues(value interface{}, name string, msg *senml.Message) {
 	}
 }
 
-func parseMessage(names []string, fields []interface{}) senml.Message {
-	m := senml.Message{}
+func parseMessage(names []string, fields []interface{}) transformers.Message {
+	m := transformers.Message{}
 	v := reflect.ValueOf(&m).Elem()
 	for i, name := range names {
 		parseValues(fields[i], name, &m)

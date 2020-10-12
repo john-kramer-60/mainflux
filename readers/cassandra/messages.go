@@ -8,7 +8,7 @@ import (
 
 	"github.com/gocql/gocql"
 	"github.com/mainflux/mainflux/pkg/errors"
-	"github.com/mainflux/mainflux/pkg/transformers/senml"
+	"github.com/mainflux/mainflux/pkg/transformers"
 	"github.com/mainflux/mainflux/readers"
 )
 
@@ -53,11 +53,11 @@ func (cr cassandraRepository) ReadAll(chanID string, offset, limit uint64, query
 	page := readers.MessagesPage{
 		Offset:   offset,
 		Limit:    limit,
-		Messages: []senml.Message{},
+		Messages: []transformers.Message{},
 	}
 
 	for scanner.Next() {
-		var msg senml.Message
+		var msg transformers.Message
 		err := scanner.Scan(&msg.Channel, &msg.Subtopic, &msg.Publisher, &msg.Protocol,
 			&msg.Name, &msg.Unit, &msg.Value, &msg.StringValue, &msg.BoolValue,
 			&msg.DataValue, &msg.Sum, &msg.Time, &msg.UpdateTime)

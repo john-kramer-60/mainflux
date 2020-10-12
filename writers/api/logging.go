@@ -10,7 +10,7 @@ import (
 	"time"
 
 	log "github.com/mainflux/mainflux/logger"
-	"github.com/mainflux/mainflux/pkg/transformers/senml"
+	"github.com/mainflux/mainflux/pkg/transformers"
 	"github.com/mainflux/mainflux/writers"
 )
 
@@ -26,7 +26,7 @@ func LoggingMiddleware(svc writers.MessageRepository, logger log.Logger) writers
 	return &loggingMiddleware{logger, svc}
 }
 
-func (lm *loggingMiddleware) Save(msgs ...senml.Message) (err error) {
+func (lm *loggingMiddleware) Save(msgs ...transformers.Message) (err error) {
 	defer func(begin time.Time) {
 		message := fmt.Sprintf("Method save took %s to complete", time.Since(begin))
 		if err != nil {

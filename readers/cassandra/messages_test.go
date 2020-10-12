@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mainflux/mainflux/pkg/transformers/senml"
+	"github.com/mainflux/mainflux/pkg/transformers"
 	"github.com/mainflux/mainflux/readers"
 	creaders "github.com/mainflux/mainflux/readers/cassandra"
 	cwriters "github.com/mainflux/mainflux/writers/cassandra"
@@ -26,7 +26,7 @@ const (
 
 var (
 	addr = "localhost"
-	msg  = senml.Message{
+	msg  = transformers.Message{
 		Channel:   chanID,
 		Publisher: "1",
 		Protocol:  "mqtt",
@@ -50,8 +50,8 @@ func TestReadAll(t *testing.T) {
 	defer session.Close()
 	writer := cwriters.New(session)
 
-	messages := []senml.Message{}
-	subtopicMsgs := []senml.Message{}
+	messages := []transformers.Message{}
+	subtopicMsgs := []transformers.Message{}
 	now := time.Now().Unix()
 	for i := 0; i < msgsNum; i++ {
 		// Mix possible values as well as value sum.
@@ -112,7 +112,7 @@ func TestReadAll(t *testing.T) {
 				Total:    0,
 				Offset:   0,
 				Limit:    msgsNum,
-				Messages: []senml.Message{},
+				Messages: []transformers.Message{},
 			},
 		},
 		"read message last page": {
@@ -135,7 +135,7 @@ func TestReadAll(t *testing.T) {
 				Total:    0,
 				Offset:   0,
 				Limit:    msgsNum,
-				Messages: []senml.Message{},
+				Messages: []transformers.Message{},
 			},
 		},
 		"read message with subtopic": {

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	influxdata "github.com/influxdata/influxdb/client/v2"
-	"github.com/mainflux/mainflux/pkg/transformers/senml"
+	"github.com/mainflux/mainflux/pkg/transformers"
 	"github.com/mainflux/mainflux/readers"
 	reader "github.com/mainflux/mainflux/readers/influxdb"
 	writer "github.com/mainflux/mainflux/writers/influxdb"
@@ -43,7 +43,7 @@ var (
 		Password: "test",
 	}
 
-	m = senml.Message{
+	m = transformers.Message{
 		Channel:    chanID,
 		Publisher:  "1",
 		Protocol:   "mqtt",
@@ -57,8 +57,8 @@ var (
 func TestReadAll(t *testing.T) {
 	writer := writer.New(client, testDB)
 
-	messages := []senml.Message{}
-	subtopicMsgs := []senml.Message{}
+	messages := []transformers.Message{}
+	subtopicMsgs := []transformers.Message{}
 	now := time.Now().UnixNano()
 	for i := 0; i < msgsNum; i++ {
 		// Mix possible values as well as value sum.
@@ -117,7 +117,7 @@ func TestReadAll(t *testing.T) {
 				Total:    0,
 				Offset:   0,
 				Limit:    10,
-				Messages: []senml.Message{},
+				Messages: []transformers.Message{},
 			},
 		},
 		"read message last page": {
@@ -140,7 +140,7 @@ func TestReadAll(t *testing.T) {
 				Total:    0,
 				Offset:   0,
 				Limit:    msgsNum,
-				Messages: []senml.Message{},
+				Messages: []transformers.Message{},
 			},
 		},
 		"read message with subtopic": {

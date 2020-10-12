@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/mainflux/mainflux/pkg/errors"
-	"github.com/mainflux/mainflux/pkg/transformers/senml"
+	"github.com/mainflux/mainflux/pkg/transformers"
 	"github.com/mainflux/mainflux/writers"
 
 	influxdata "github.com/influxdata/influxdb/client/v2"
@@ -39,7 +39,7 @@ func New(client influxdata.Client, database string) writers.MessageRepository {
 	}
 }
 
-func (repo *influxRepo) Save(messages ...senml.Message) error {
+func (repo *influxRepo) Save(messages ...transformers.Message) error {
 	pts, err := influxdata.NewBatchPoints(repo.cfg)
 	if err != nil {
 		return errors.Wrap(errSaveMessage, err)
@@ -63,7 +63,7 @@ func (repo *influxRepo) Save(messages ...senml.Message) error {
 	return nil
 }
 
-func (repo *influxRepo) tagsOf(msg *senml.Message) tags {
+func (repo *influxRepo) tagsOf(msg *transformers.Message) tags {
 	return tags{
 		"channel":   msg.Channel,
 		"subtopic":  msg.Subtopic,
@@ -72,7 +72,7 @@ func (repo *influxRepo) tagsOf(msg *senml.Message) tags {
 	}
 }
 
-func (repo *influxRepo) fieldsOf(msg *senml.Message) fields {
+func (repo *influxRepo) fieldsOf(msg *transformers.Message) fields {
 	updateTime := strconv.FormatFloat(msg.UpdateTime, 'f', -1, 64)
 	ret := fields{
 		"protocol":   msg.Protocol,

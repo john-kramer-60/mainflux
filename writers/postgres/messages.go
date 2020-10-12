@@ -10,7 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq" // required for DB access
 	"github.com/mainflux/mainflux/pkg/errors"
-	"github.com/mainflux/mainflux/pkg/transformers/senml"
+	"github.com/mainflux/mainflux/pkg/transformers"
 	"github.com/mainflux/mainflux/writers"
 )
 
@@ -35,7 +35,7 @@ func New(db *sqlx.DB) writers.MessageRepository {
 	return &postgresRepo{db: db}
 }
 
-func (pr postgresRepo) Save(messages ...senml.Message) (err error) {
+func (pr postgresRepo) Save(messages ...transformers.Message) (err error) {
 	q := `INSERT INTO messages (id, channel, subtopic, publisher, protocol,
     name, unit, value, string_value, bool_value, data_value, sum,
     time, update_time)
@@ -99,7 +99,7 @@ type dbMessage struct {
 	UpdateTime  float64  `db:"update_time"`
 }
 
-func toDBMessage(msg senml.Message) (dbMessage, error) {
+func toDBMessage(msg transformers.Message) (dbMessage, error) {
 	id, err := uuid.NewV4()
 	if err != nil {
 		return dbMessage{}, err

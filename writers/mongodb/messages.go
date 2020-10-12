@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/mainflux/mainflux/pkg/errors"
-	"github.com/mainflux/mainflux/pkg/transformers/senml"
+	"github.com/mainflux/mainflux/pkg/transformers"
 	"github.com/mainflux/mainflux/writers"
 )
 
@@ -45,7 +45,7 @@ func New(db *mongo.Database) writers.MessageRepository {
 	return &mongoRepo{db}
 }
 
-func (repo *mongoRepo) Save(messages ...senml.Message) error {
+func (repo *mongoRepo) Save(messages ...transformers.Message) error {
 	coll := repo.db.Collection(collectionName)
 	var msgs []interface{}
 	for _, msg := range messages {

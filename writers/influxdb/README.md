@@ -18,7 +18,7 @@ default values.
 | MF_INFLUX_WRITER_DB_USER         | Default user of InfluxDB database                        | mainflux               |
 | MF_INFLUX_WRITER_DB_PASS         | Default password of InfluxDB user                        | mainflux               |
 | MF_INFLUX_WRITER_DB              | InfluxDB database name                                   | messages               |
-| MF_INFLUX_WRITER_SUBJECTS_CONFIG | Configuration file path with subjects list               | /config/subjects.toml  |
+| MF_INFLUX_WRITER_CONFIG_PATH     | Configuration file path with filters list                | /configs.toml          |
 | MF_INFLUX_WRITER_CONTENT_TYPE    | Message payload Content Type                             | application/senml+json |
 
 ## Deployment
@@ -40,7 +40,7 @@ default values.
       MF_INFLUX_WRITER_DB_PORT: [InfluxDB port]
       MF_INFLUX_WRITER_DB_USER: [InfluxDB admin user]
       MF_INFLUX_WRITER_DB_PASS: [InfluxDB admin password]
-      MF_INFLUX_WRITER_SUBJECTS_CONFIG: [Configuration file path with subjects list]
+      MF_INFLUX_WRITER_CONFIG_PATH: [Configuration file path with filters list]
       MF_INFLUX_WRITER_CONTENT_TYPE: [Message payload Content Type]
     ports:
       - [host machine port]:[configured HTTP port]
@@ -63,7 +63,7 @@ make influxdb
 make install
 
 # Set the environment variables and run the service
-MF_NATS_URL=[NATS instance URL] MF_INFLUX_WRITER_LOG_LEVEL=[Influx writer log level] MF_INFLUX_WRITER_PORT=[Service HTTP port] MF_INFLUX_WRITER_DB=[InfluxDB database name] MF_INFLUX_WRITER_DB_HOST=[InfluxDB database host] MF_INFLUX_WRITER_DB_PORT=[InfluxDB database port] MF_INFLUX_WRITER_DB_USER=[InfluxDB admin user] MF_INFLUX_WRITER_DB_PASS=[InfluxDB admin password] MF_INFLUX_WRITER_SUBJECTS_CONFIG=[Configuration file path with subjects list] $GOBIN/mainflux-influxdb
+MF_NATS_URL=[NATS instance URL] MF_INFLUX_WRITER_LOG_LEVEL=[Influx writer log level] MF_INFLUX_WRITER_PORT=[Service HTTP port] MF_INFLUX_WRITER_DB=[InfluxDB database name] MF_INFLUX_WRITER_DB_HOST=[InfluxDB database host] MF_INFLUX_WRITER_DB_PORT=[InfluxDB database port] MF_INFLUX_WRITER_DB_USER=[InfluxDB admin user] MF_INFLUX_WRITER_DB_PASS=[InfluxDB admin password] MF_INFLUX_WRITER_CONFIG_PATH=[Configuration file path with filters list] $GOBIN/mainflux-influxdb
 ```
 
 ### Using docker-compose
