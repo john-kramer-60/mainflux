@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mainflux/mainflux/pkg/transformers"
+	"github.com/mainflux/mainflux/pkg/transformers/senml"
 	"github.com/mainflux/mainflux/readers"
 	creaders "github.com/mainflux/mainflux/readers/cassandra"
 	cwriters "github.com/mainflux/mainflux/writers/cassandra"
@@ -26,7 +26,7 @@ const (
 
 var (
 	addr = "localhost"
-	msg  = transformers.Message{
+	msg  = senml.Message{
 		Channel:   chanID,
 		Publisher: "1",
 		Protocol:  "mqtt",
@@ -50,8 +50,8 @@ func TestReadAll(t *testing.T) {
 	defer session.Close()
 	writer := cwriters.New(session)
 
-	messages := []transformers.Message{}
-	subtopicMsgs := []transformers.Message{}
+	messages := []senml.Message{}
+	subtopicMsgs := []senml.Message{}
 	now := time.Now().Unix()
 	for i := 0; i < msgsNum; i++ {
 		// Mix possible values as well as value sum.
@@ -78,7 +78,7 @@ func TestReadAll(t *testing.T) {
 		}
 	}
 
-	err = writer.Save(messages...)
+	err = writer.Save(messages)
 	require.Nil(t, err, fmt.Sprintf("failed to store message to Cassandra: %s", err))
 
 	reader := creaders.New(session)
@@ -112,7 +112,7 @@ func TestReadAll(t *testing.T) {
 				Total:    0,
 				Offset:   0,
 				Limit:    msgsNum,
-				Messages: []transformers.Message{},
+				Messages: []senml.Message{},
 			},
 		},
 		"read message last page": {
@@ -135,7 +135,7 @@ func TestReadAll(t *testing.T) {
 				Total:    0,
 				Offset:   0,
 				Limit:    msgsNum,
-				Messages: []transformers.Message{},
+				Messages: []senml.Message{},
 			},
 		},
 		"read message with subtopic": {

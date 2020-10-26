@@ -1,4 +1,4 @@
-package transformers
+package senml
 
 // Message represents a resolved (normalized) SenML record.
 type Message struct {
